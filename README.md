@@ -23,6 +23,48 @@ Reach for it on **design decisions, fuzzy debugging, naming, API surface design,
 
 ---
 
+## Side-by-side: baseline vs ADHD
+
+One eval problem, same model, two strategies. Full transcripts in [`bench/results.json`](./bench/results.json).
+
+> **Problem.** *"We have a CLI that calls an LLM and it sometimes hangs for 90 seconds. Design the right retry/timeout/UX strategy."*
+
+<table>
+<tr>
+<th width="50%">🟦 Baseline (single-shot)</th>
+<th width="50%">🟧 ADHD</th>
+</tr>
+<tr valign="top">
+<td>
+
+Walks through four **textbook** patterns:
+
+1. Progressive timeout with staged UI (10s / 30s / 60s)
+2. Fast-fail + exponential backoff retry
+3. Hedged parallel requests
+4. Streaming with keepalive
+
+Lands on a **hybrid** recommendation — 15s first-token timeout, 30s between-token timeout, 90s absolute, one auto-retry. Sensible. Google SRE Book ch. 22. The answer a senior engineer gives in 30 seconds.
+
+**What's missing:** no traps named, no acknowledgement that the *user* might want to bail out of a slow request, no questioning of the "wait then retry the same model" frame.
+
+</td>
+<td>
+
+Spawns 6 isolated frames, surfaces a **wide set** of 30+ ideas across `economic-incentive`, `async-control-surface`, `gamification`, `perceptual-distortion`, `collective-intelligence`, `redundancy-race` clusters, then:
+
+- ★ **Non-obvious pick:** *"rage-quit = instant abort + branch to cheaper/faster model"* — a button that pulses hotter the longer you wait. One click cancels and re-submits to Haiku-class. The thing baseline never considers: **the slow model might just be the wrong model for this prompt.**
+- Plus shortlist: scout-fork to alternate endpoints at 30s; daemonize the CLI with ticket IDs; race 3 LLM replicas, cache the winner.
+- **20 traps flagged with one-line reasons** — including the cute "stream tokens in reverse" and "patience-token billing" ideas before they cost engineering time.
+
+</td>
+</tr>
+</table>
+
+Independent LLM judge on this problem: **breadth 9 vs 6, novelty 8 vs 3, trap detection ~8 vs ~2.** Methodology in [documentation/evals.md](./documentation/evals.md).
+
+---
+
 ## Featured
 
 - 🔌 **Adopted by [repowire](https://github.com/prassanna-ravishankar/repowire)** — the first OSS project to officially ship ADHD. Its maintainer ported the framework onto repowire's mesh-orchestrator primitives in [PR #313](https://github.com/prassanna-ravishankar/repowire/pull/313) (merged): frames become frame-shifted temp peers, the generator/critic split maps onto separate peers vs. the orchestrator's own turn, attribution via `metadata.based-on` (MIT).
