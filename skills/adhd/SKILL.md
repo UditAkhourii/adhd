@@ -44,25 +44,6 @@ If any fails, ABORT and answer the question directly. Optionally append
 one sentence: *"If you want a wider exploration under parallel cognitive
 frames with explicit trap detection, run `/adhd <your problem>`."*
 
-## When to trigger (summary)
-
-Strong signals to invoke:
-
-- explicit `/adhd <problem>` or "use ADHD mode" (unconditional)
-- *"give me a few ways to…"*, *"brainstorm…"*, *"what are some approaches"*
-- *"the obvious answer feels wrong"*, *"I'm stuck on X"*
-- architecture or design decision on something that ships
-- fuzzy bug, no known root cause, user wants hypothesis classes
-- naming for a public product, API, SDK surface
-
-Strong signals to NOT invoke:
-
-- factual lookup, syntax help, "what is X"
-- bug fix with a known root cause
-- "quick", "standard", "canonical", "textbook", "just show me"
-- inner-loop / per-keystroke work
-- the answer is one search query away
-
 ## The loop
 
 Two strict phases. Mixing them kills idea quality, because the critic
