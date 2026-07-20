@@ -17,6 +17,7 @@
   ],
   "scripts": {
     "build": "tsc",
+    "test": "node --import tsx --test tests/*.test.ts",
     "typecheck": "tsc --noEmit && tsc --noEmit -p tsconfig.bench.json",
     "prepublishOnly": "npm run build",
     "dev": "tsx src/cli.ts",

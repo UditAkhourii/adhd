@@ -14,18 +14,25 @@ export type LLMOptions = {
   userPrompt: string;
 };
 
+export function buildQueryOptions(opts: LLMOptions) {
+  return {
+    model: opts.model,
+    systemPrompt: {
+      type: "preset" as const,
+      preset: "claude_code" as const,
+      append: opts.systemPrompt,
+    },
+    // No tools — divergence is pure generation. Tools = convergence pressure.
+    tools: [] as string[],
+  };
+}
+
 export async function callLLM(opts: LLMOptions): Promise<string> {
   const chunks: string[] = [];
 
   const iter = query({
     prompt: opts.userPrompt,
-    options: {
-      model: opts.model,
-      systemPrompt: { type: "preset", preset: "claude_code", append: opts.systemPrompt },
-      // No tools — divergence is pure generation. Tools = convergence pressure.
-      allowedTools: [],
-      permissionMode: "bypassPermissions",
-    },
+    options: buildQueryOptions(opts),
   });
 
   for await (const message of iter) {
