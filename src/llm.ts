@@ -50,7 +50,10 @@ export async function callLLM(opts: LLMOptions): Promise<string> {
 }
 
 // Strip ```json fences and parse. LLMs love to wrap.
-export function parseJSON<T>(raw: string): T {
+// When a Zod schema is provided, validates the parsed output against it.
+import type { ZodType } from "zod";
+
+export function parseJSON<T>(raw: string, schema?: ZodType<T>): T {
   let s = raw.trim();
   const fence = s.match(/```(?:json)?\s*([\s\S]*?)```/);
   if (fence) s = fence[1].trim();
@@ -64,5 +67,7 @@ export function parseJSON<T>(raw: string): T {
       ? firstObj
       : Math.min(firstObj, firstArr);
   if (start > 0) s = s.slice(start);
-  return JSON.parse(s) as T;
+  const parsed = JSON.parse(s);
+  if (schema) return schema.parse(parsed);
+  return parsed as T;
 }

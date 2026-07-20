@@ -13,6 +13,7 @@
 
 import pLimit from "p-limit";
 import { randomUUID } from "node:crypto";
+import { z } from "zod";
 import { callLLM, parseJSON } from "./llm.js";
 import { selectFrames, type Frame } from "./frames.js";
 import type {
@@ -24,6 +25,31 @@ import type {
   RunResult,
   Score,
 } from "./types.js";
+
+const DivergeRowSchema = z.array(
+  z.object({ text: z.string(), rationale: z.string().optional() }),
+);
+
+const ScoreRowSchema = z.array(
+  z.object({
+    id: z.string(),
+    novelty: z.number().min(0).max(10),
+    viability: z.number().min(0).max(10),
+    fit: z.number().min(0).max(10),
+    trap: z.string().optional(),
+  }),
+);
+
+const ClusterSchema = z.array(
+  z.object({ label: z.string(), ideaIds: z.array(z.string()) }),
+);
+
+const DeepenSchema = z.object({
+  sketch: z.string(),
+  childIdeas: z.array(
+    z.object({ text: z.string(), rationale: z.string().optional() }),
+  ),
+});
 
 const DIVERGE_SYSTEM = `You are in DIVERGENT mode. You are a generator, not a critic.
 Rules:
@@ -82,10 +108,9 @@ Output JSON array: [{"text": "...", "rationale": "..."}]
     userPrompt,
   });
 
-  type Row = { text: string; rationale?: string };
-  let rows: Row[];
+  let rows: z.infer<typeof DivergeRowSchema>;
   try {
-    rows = parseJSON<Row[]>(raw);
+    rows = parseJSON(raw, DivergeRowSchema);
   } catch {
     return { frameId: frame.id, ideas: [] };
   }
@@ -122,10 +147,9 @@ Score each. Output JSON array:
     userPrompt,
   });
 
-  type Row = { id: string; novelty: number; viability: number; fit: number; trap?: string };
-  let rows: Row[];
+  let rows: z.infer<typeof ScoreRowSchema>;
   try {
-    rows = parseJSON<Row[]>(raw);
+    rows = parseJSON(raw, ScoreRowSchema);
   } catch {
     return new Map();
   }
@@ -168,7 +192,7 @@ Output JSON: [{"label":"...","ideaIds":["...","..."]}]`;
   });
 
   try {
-    return parseJSON<Cluster[]>(raw);
+    return parseJSON(raw, ClusterSchema);
   } catch {
     return [];
   }
@@ -208,10 +232,9 @@ Output JSON:
     userPrompt,
   });
 
-  type Out = { sketch: string; childIdeas: { text: string; rationale?: string }[] };
-  let parsed: Out;
+  let parsed: z.infer<typeof DeepenSchema>;
   try {
-    parsed = parseJSON<Out>(raw);
+    parsed = parseJSON(raw, DeepenSchema);
   } catch {
     return { ideaId: idea.id, sketch: "(deepen pass failed to parse)", childIdeas: [] };
   }

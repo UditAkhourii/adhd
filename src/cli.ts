@@ -6,7 +6,7 @@
 //   connect-dots "..." --frames 6 --ideas 8 --top 4 --context ./CONTEXT.md
 //   connect-dots "..." --json > result.json
 
-import { readFileSync } from "node:fs";
+import { readFileSync, statSync } from "node:fs";
 import { run } from "./engine.js";
 import { renderText } from "./render.js";
 import type { RunEvent, RunOptions } from "./types.js";
@@ -25,17 +25,41 @@ type Flags = {
   criticModel?: string;
 };
 
+function positiveInt(raw: string, flag: string, max: number): number {
+  const n = Number(raw);
+  if (!Number.isFinite(n) || n < 1 || !Number.isInteger(n)) {
+    console.error(`Error: ${flag} must be a positive integer, got "${raw}"`);
+    process.exit(1);
+  }
+  if (n > max) {
+    console.error(`Error: ${flag} must be at most ${max}, got ${n}`);
+    process.exit(1);
+  }
+  return n;
+}
+
+const MAX_CONTEXT_BYTES = 10 * 1024 * 1024; // 10 MB
+
 function parse(argv: string[]): Flags {
   const f: Flags = { problem: "", codeMode: true, json: false, quiet: false };
   const rest: string[] = [];
   for (let i = 0; i < argv.length; i++) {
     const a = argv[i];
     switch (a) {
-      case "--frames": f.frames = Number(argv[++i]); break;
-      case "--ideas": f.ideas = Number(argv[++i]); break;
-      case "--top": f.top = Number(argv[++i]); break;
-      case "--concurrency": f.concurrency = Number(argv[++i]); break;
-      case "--context": f.context = readFileSync(argv[++i], "utf8"); break;
+      case "--frames": f.frames = positiveInt(argv[++i], "--frames", 20); break;
+      case "--ideas": f.ideas = positiveInt(argv[++i], "--ideas", 50); break;
+      case "--top": f.top = positiveInt(argv[++i], "--top", 20); break;
+      case "--concurrency": f.concurrency = positiveInt(argv[++i], "--concurrency", 16); break;
+      case "--context": {
+        const path = argv[++i];
+        const { size } = statSync(path);
+        if (size > MAX_CONTEXT_BYTES) {
+          console.error(`Error: context file is ${(size / 1024 / 1024).toFixed(1)} MB (max 10 MB)`);
+          process.exit(1);
+        }
+        f.context = readFileSync(path, "utf8");
+        break;
+      }
       case "--model": f.model = argv[++i]; break;
       case "--critic-model": f.criticModel = argv[++i]; break;
       case "--no-code-mode": f.codeMode = false; break;

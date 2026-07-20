@@ -121,6 +121,16 @@ export const FRAMES: Frame[] = [
   },
 ];
 
+// Fisher-Yates shuffle — uniform distribution, unlike sort(() => Math.random() - 0.5).
+function shuffle<T>(arr: T[]): T[] {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
 // Pick N frames for a run. Bias toward engineering tags when codeMode is on,
 // but always include at least one wildcard so divergence stays weird.
 export function selectFrames(n: number, codeMode = true): Frame[] {
@@ -129,7 +139,7 @@ export function selectFrames(n: number, codeMode = true): Frame[] {
     : [...FRAMES];
   const wild = FRAMES.filter((f) => f.tags.includes("wild"));
 
-  const shuffled = [...pool].sort(() => Math.random() - 0.5);
+  const shuffled = shuffle(pool);
   const picked = shuffled.slice(0, Math.max(1, n - 1));
   const wildPick = wild[Math.floor(Math.random() * wild.length)];
   if (!picked.find((f) => f.id === wildPick.id)) picked.push(wildPick);
