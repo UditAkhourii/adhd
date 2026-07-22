@@ -22,8 +22,8 @@ brainstorming prompts. Avoid it for lookups or known-root-cause bugs.
 
 ## Use the CLI
 
-Sign in through Claude Code or provide an Anthropic API key, then install the package:
-
+Auth: set `ANTHROPIC_API_KEY`, or (if installed) inherit auth from Claude Code.
+Then install the package:
 ```bash
 export ANTHROPIC_API_KEY="your-api-key"
 npm install -g adhd-agent
