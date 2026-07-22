@@ -191,6 +191,7 @@ Mean scores across 6 open-ended engineering problems (0–10), ADHD vs a single-
 
 | Page | What's in it |
 |---|---|
+| [Quickstart](./documentation/quickstart.md) | First skill, CLI, and TypeScript runs with practical commands |
 | [Install](./documentation/install.md) | Every install path — skill, CLI, library, Agent SDK, per-platform |
 | [How it works](./documentation/how-it-works.md) | The two-phase loop + architecture (context, pruning, orchestration) |
 | [vs CoT & ToT](./documentation/vs-cot-and-tot.md) | Structural comparison, the three load-bearing differences, frames vs personas |
