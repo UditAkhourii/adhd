@@ -50,14 +50,16 @@ export function renderText(r: RunResult): string {
     const mark = r.nonObviousPick?.id === i.id ? green("★ non-obvious pick → ") : "  ";
     out.push(`  ${mark}${i.text} ${chip(i)}`);
     if (i.rationale) out.push(`    ${dim(i.rationale)}`);
+    if (i.score?.strength) out.push(`    ${green("+")} ${dim(i.score.strength)}`);
   }
   out.push("");
 
   if (r.traps.length > 0) {
-    out.push(bold("Traps (look good, aren't)"));
+    out.push(bold("Traps (watch-outs, not verdicts)"));
     for (const t of r.traps) {
       out.push(`  ${red("⚠")} ${t.text}`);
       out.push(`    ${dim(t.score?.trap ?? "")}`);
+      if (t.score?.strength) out.push(`    ${green("+")} ${dim(t.score.strength)}`);
     }
     out.push("");
   }

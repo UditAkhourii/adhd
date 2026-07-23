@@ -37,6 +37,7 @@ const ScoreRowSchema = z.array(
     viability: z.number().min(0).max(10),
     fit: z.number().min(0).max(10),
     trap: z.string().optional(),
+    strength: z.string().optional(),
   }),
 );
 
@@ -66,9 +67,19 @@ Score each idea on three axes 0-10:
 - novelty: distance from the obvious default solution
 - viability: could this actually ship / work in practice
 - fit: how directly it addresses the stated problem
-If the idea looks attractive but is a TRAP (hidden cost, false economy,
-will-not-scale, premature abstraction), set "trap" to a one-line reason.
-Otherwise omit "trap".
+
+Tell the truth about weaknesses — don't soften the substance. But the
+critic's job is to produce two symmetric signals, not just one:
+
+- "strength": required for every idea, even weak ones. The single most
+  concrete thing this idea gets right that a competing idea doesn't.
+- "trap" (optional): if the idea looks attractive but has a hidden cost
+  (false economy, won't scale, premature abstraction), name it as a
+  specific, actionable heads-up — e.g. "solid for a prototype, breaks
+  past 10k concurrent users" — not a dismissal like "bad idea." The
+  fact stays the fact; only the framing changes: information you can
+  act on, not a verdict on the idea's worth.
+
 Output JSON only.`;
 
 const CLUSTER_SYSTEM = `You group ideas into 3-6 clusters by their UNDERLYING ANGLE
@@ -139,7 +150,7 @@ IDEAS (id → text):
 ${ideas.map((i) => `${i.id} :: ${i.text}`).join("\n")}
 
 Score each. Output JSON array:
-[{"id":"...","novelty":0-10,"viability":0-10,"fit":0-10,"trap":"... or omit"}]`;
+[{"id":"...","novelty":0-10,"viability":0-10,"fit":0-10,"strength":"...","trap":"... or omit"}]`;
 
   const raw = await callLLM({
     model,
@@ -165,6 +176,7 @@ Score each. Output JSON array:
       fit: r.fit,
       total,
       trap: r.trap,
+      strength: r.strength,
     });
   }
   return out;

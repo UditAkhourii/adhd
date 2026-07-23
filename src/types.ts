@@ -15,6 +15,7 @@ export type Score = {
   fit: number;         // 0-10, addresses the stated problem
   total: number;       // weighted
   trap?: string;       // if it looks good but is a trap, why
+  strength?: string;   // the one concrete thing this idea gets right
 };
 
 export type Branch = {
