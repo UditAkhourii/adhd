@@ -1,0 +1,29 @@
+{
+  "name": "adhd",
+  "owner": {
+    "name": "ADHD contributors",
+    "url": "https://github.com/UditAkhourii/adhd"
+  },
+  "plugins": [
+    {
+      "name": "adhd",
+      "source": "./",
+      "description": "Parallel divergent ideation for coding agents: fans out isolated branches under different cognitive frames, scores, clusters, prunes traps, and deepens the survivors.",
+      "version": "0.1.4",
+      "author": {
+        "name": "ADHD contributors"
+      },
+      "homepage": "https://github.com/UditAkhourii/adhd#readme",
+      "repository": "https://github.com/UditAkhourii/adhd",
+      "license": "MIT",
+      "category": "productivity",
+      "keywords": [
+        "ideation",
+        "brainstorm",
+        "divergent-thinking",
+        "tree-of-thought",
+        "architecture"
+      ]
+    }
+  ]
+}
