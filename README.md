@@ -17,10 +17,7 @@
 
 <a href="https://trendshift.io/repositories/39300?utm_source=trendshift-badge&amp;utm_medium=badge&amp;utm_campaign=badge-trendshift-39300" target="_blank" rel="noopener noreferrer"><img src="https://trendshift.io/api/badge/trendshift/repositories/39300/daily?language=TypeScript" alt="UditAkhourii%2Fadhd | Trendshift" width="250" height="55"/></a>
 
-> ### 🎮 [**Join the ADHD Discord →**](https://discord.gg/NbWwkwwGw)
-> This is where the real-time thinking happens: frame design, eval problems, trap-hunting, and neurodivergence-inspired research on reasoning architectures. If you've got opinions on premature convergence, cognitive frames, or just want to argue about the next eval problem — **[come argue with us live](https://discord.gg/NbWwkwwGw).**
-
-> 👉 [**Join the ADHD community →**](https://tally.so/r/WO1Nzj) as a contributor, maintainer, early adopter, or just a member. One short form. We coordinate frame contributions, eval problems, integrations, and adopter onboarding there.
+> 🎮 [**Join the Discord →**](https://discord.gg/NbWwkwwGw) for frame design, eval problems, and trap-hunting in real time · 👉 [**Join the community →**](https://tally.so/r/WO1Nzj) as a contributor, maintainer, or early adopter (one short form).
 
 > **An architectural fix for premature convergence in autoregressive reasoning.**
 
@@ -37,6 +34,11 @@ Reach for it on **design decisions, fuzzy debugging, naming, API surface design,
 One eval problem, same model, two strategies. Full transcripts in [`bench/results.json`](./bench/results.json).
 
 > **Problem.** *"We have a CLI that calls an LLM and it sometimes hangs for 90 seconds. Design the right retry/timeout/UX strategy."*
+
+Baseline gives the sensible textbook hybrid (staged timeouts + one auto-retry) — the answer a senior engineer gives in 30 seconds, with no traps named. ADHD spawns 6 isolated frames, surfaces 30+ ideas, flags 20 traps with reasons, and lands the non-obvious pick baseline never considers: **the slow model might just be the wrong model for this prompt** — instant abort + branch to a cheaper/faster one.
+
+<details>
+<summary><strong>Expand the full side-by-side</strong></summary>
 
 <table>
 <tr>
@@ -70,48 +72,26 @@ Spawns 6 isolated frames, surfaces a **wide set** of 30+ ideas across `economic-
 </tr>
 </table>
 
+</details>
+
 Independent LLM judge on this problem: **breadth 9 vs 6, novelty 8 vs 3, trap detection ~8 vs ~2.** Methodology in [documentation/evals.md](./documentation/evals.md).
 
 ---
 
 ## Featured
 
-- 🔌 **Adopted by [repowire](https://github.com/prassanna-ravishankar/repowire)** — the first OSS project to officially ship ADHD. Its maintainer ported the framework onto repowire's mesh-orchestrator primitives in [PR #313](https://github.com/prassanna-ravishankar/repowire/pull/313) (merged): frames become frame-shifted temp peers, the generator/critic split maps onto separate peers vs. the orchestrator's own turn, attribution via `metadata.based-on` (MIT).
+- 🔌 **Adopted by [repowire](https://github.com/prassanna-ravishankar/repowire)** — the first OSS project to officially ship ADHD, ported onto its mesh-orchestrator primitives in [PR #313](https://github.com/prassanna-ravishankar/repowire/pull/313) (merged).
 - 📰 **[The New Stack](https://thenewstack.io/claude-code-adhd/)** ran a feature story on ADHD for Claude Code.
 - 💬 **OpenClaw / multi-agent community** is independently testing it across agents. One tester: *"I read it, installed it on two different agents… I actually love it. This is great. I thought this was gonna be another useless post. But no, it wasn't."*
 - 🔬 An independent **[evidence-based research review](https://github.com/testdouble/han/blob/adhd-swarm-research/docs/research/adhd-application-to-han.md)** (11 sources, 8 validation rounds) was published against the method — findings tracked openly as [issues #16–#18](https://github.com/UditAkhourii/adhd/issues).
 
 ---
 
-## Community
-
-👉 [**Join the ADHD community →**](https://tally.so/r/WO1Nzj) as a contributor, maintainer, early adopter, or just a member. One short form. We coordinate frame contributions, eval problems, integrations, and adopter onboarding there.
-
----
-
 ## Early adopters
 
-Projects that officially ship or integrate ADHD:
+**17+ projects** ship or integrate ADHD — including [repowire](https://github.com/prassanna-ravishankar/repowire), [mstack](https://github.com/mayank-io/mstack), [zk-flow-oss](https://github.com/matt-metivier/zk-flow-oss), [han](https://github.com/testdouble/han), [wtfismyrepo](https://github.com/nandnijaiswal/wtfismyrepo), and [awesome-prompts](https://github.com/ai-boost/awesome-prompts). The full table of who shipped what lives in **[ADOPTERS.md](./ADOPTERS.md)**.
 
-| Project | What they did | Status |
-|---|---|---|
-| [**repowire**](https://github.com/prassanna-ravishankar/repowire) | Ported ADHD onto repowire's mesh-orchestrator primitives — frames become frame-shifted temp peers, generator/critic split maps to separate peers vs. the orchestrator's turn. Ships in the default orchestrator template. ([PR #313](https://github.com/prassanna-ravishankar/repowire/pull/313)) | ✅ Merged · MIT attribution |
-| [**mstack**](https://github.com/mayank-io/mstack) | Vendored ADHD as the `think` plugin in their Claude plugin marketplace — wires the divergent-then-converge loop into mstack for architecture, naming, API design, and fuzzy debugging. | ✅ Shipped · MIT attribution |
-| [**zk-flow-oss**](https://github.com/matt-metivier/zk-flow-oss) | Adapted ADHD's `IDEATION_FRAMES` into their critique workflow ([`src/workflows/critique.src.js`](https://github.com/matt-metivier/zk-flow-oss/blob/main/src/workflows/critique.src.js)) as a pre-pass to reduce anchoring bias before review. | ✅ Shipped · MIT attribution |
-| [**han**](https://github.com/testdouble/han) | Published an [evidence-based research application](https://github.com/testdouble/han/blob/adhd-swarm-research/docs/research/adhd-application-to-han.md) of ADHD onto Han's plugin model — 11 sources, 8 validation rounds. Findings landed as issues [#16](https://github.com/UditAkhourii/adhd/issues/16)–[#18](https://github.com/UditAkhourii/adhd/issues/18). | ✅ Research integration |
-| [**app-library** (yslee5005)](https://github.com/yslee5005/app-library) | Built an `expert-thinker` MoAI agent on the ADHD pattern — tree-of-thought with isolated divergence and a separate critic pass. | ✅ Shipped |
-| [**striatum**](https://github.com/halbritt/striatum) | Installer scaffold for Claude Code recommends `npx skills add UditAkhourii/adhd` for architecture, API design, and naming work. | ✅ Shipped |
-| [**awesome-prompts**](https://github.com/ai-boost/awesome-prompts) | Packaged the ADHD loop as a standalone prompt (`adhd_parallel_ideation_skill.txt`) for users without the skill installed. | ✅ Shipped |
-| [**nix-skills**](https://github.com/sudosubin/nix-skills) | Nix packaging of the ADHD skill (pinned to commit `770834e`) for the Nix-based agent-skills ecosystem. | ✅ Shipped |
-| [**caioniehues/adhd**](https://github.com/caioniehues/adhd) | Fork with a customized `SKILL.md` that re-points install + docs to their own distribution while keeping upstream attribution. | ✅ Fork · attribution |
-| [**ktg-one/adhd**](https://github.com/ktg-one/adhd) | Fork used as a personal "codified model of how my brain works" — wired into the [may-2026-kb](https://github.com/ktg-one/may-2026-kb) knowledge base as a cognitive-architecture pattern. | ✅ Fork · in use |
-| [**wtfismyrepo**](https://github.com/nandnijaiswal/wtfismyrepo) | Uses ADHD as the explanation engine for codebase onboarding. The deterministic layer (import-graph PageRank, git-churn fragility, GitHub PR/issue signals) produces an analysis object that is formatted as an ADHD `problem` + `context`. The ADHD diverge→score→cluster→deepen loop then generates onboarding angles across 12 codebase-specific frames (`new-grad`, `archeologist`, `security-researcher`, `on-call-at-3am`, `refactorer`, `inversion`, …), scores them for fit to the developer's level + goal, prunes traps, and deepens the non-obvious pick into a full walkthrough. Ships the ADHD method in the Claude Code skill (`SKILL.md`) with zero extra deps — Claude runs the frames itself. | ✅ Shipped · MIT attribution |
-| [**mythify**](https://github.com/hannsxpeter/mythify) | Added trap-clause and alternatives guidance to its analysis prompt packet after evaluating ADHD's divergent-frames-then-critic pattern — surfaces "the one that looks good but isn't, and why" before a plan is committed to. ([PR #18](https://github.com/hannsxpeter/mythify/pull/18)) | ✅ Merged |
-| [**godaudits**](https://github.com/hannsxpeter/godaudits) | Shipped v2.11.0 adopting measurement and provenance discipline from an ADHD review — an independent refutation pass (`refute plan`/`apply`), severity-aware recall metrics, and attribution/limits tracking on eval results. ([PR #13](https://github.com/hannsxpeter/godaudits/pull/13)) | ✅ Shipped |
-| [**godplans**](https://github.com/hannsxpeter/godplans) | Shipped v1.8.0 turning its self-audit into an independent audit gate (separate scoring pass, isolated context) and adding a no-skill baseline control arm to its eval harness, inspired by ADHD's generator/critic split — while explicitly rejecting the novelty-scoring axis and randomized frame selection as unsuited to its own goals. ([PR #8](https://github.com/hannsxpeter/godplans/pull/8)) | ✅ Shipped |
-| [**Claude1.0** (Ro-Sama-33)](https://github.com/Ro-Sama-33/Claude1.0) | Installed the ADHD skill into `.agents/skills/adhd/`. ([PR #16](https://github.com/Ro-Sama-33/Claude1.0/pull/16)) | ✅ Installed |
-
-Shipping ADHD in your project? Open a PR adding it here, or [open an issue](https://github.com/UditAkhourii/adhd/issues/new) and we'll add you.
+Shipping ADHD in your project? Open a PR adding yourself to [ADOPTERS.md](./ADOPTERS.md), or [open an issue](https://github.com/UditAkhourii/adhd/issues/new) and we'll add you.
 
 ---
 
@@ -125,30 +105,12 @@ npx skills add UditAkhourii/adhd
 
 Then invoke explicitly with `/adhd "your problem"`, or let it auto-trigger on ideation intents.
 
-### Codex quick path
-
-If the universal command above fails to register inside Codex (some Codex builds discover skills from a specific path), force the target:
-
-```bash
-npx skills add UditAkhourii/adhd -a codex -g
-```
-
-Or install manually into Codex's skills directory:
-
-```bash
-mkdir -p ~/.codex/skills/adhd
-curl -fsSL https://raw.githubusercontent.com/UditAkhourii/adhd/main/skills/adhd/SKILL.md \
-  -o ~/.codex/skills/adhd/SKILL.md
-```
-
-Restart Codex. `/adhd "design a rate limiter"` should now route through the skill. The skill ships with a single-line description (≤600 chars) specifically because some Codex builds truncate or reject multi-line YAML block descriptions.
-
-CLI and library installs, manual curl for other agents, and per-platform paths are in **[documentation/install.md](./documentation/install.md)**.
-
 ```bash
 npm install -g adhd-agent     # CLI
 npm install adhd-agent        # library
 ```
+
+CLI and library installs, the Codex quick path, manual curl for other agents, and per-platform paths are in **[documentation/install.md](./documentation/install.md)**.
 
 ---
 
@@ -218,8 +180,6 @@ In-repo pages:
 Also: [SKILL.md](./skills/adhd/SKILL.md) (the runnable skill) · [SOURCE-SPEC.md](./SOURCE-SPEC.md) (original spec) · [CONTRIBUTING.md](./CONTRIBUTING.md) · [the preprint](https://adhdstack.github.io/).
 
 ---
-
-## Star History
 
 ## Star History
 
