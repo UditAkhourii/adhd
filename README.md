@@ -8,6 +8,7 @@
 
 [![CI](https://github.com/UditAkhourii/adhd/actions/workflows/ci.yml/badge.svg)](https://github.com/UditAkhourii/adhd/actions/workflows/ci.yml)
 [![npm](https://img.shields.io/npm/v/adhd-agent.svg)](https://www.npmjs.com/package/adhd-agent)
+[![Docs](https://img.shields.io/badge/docs-adhd.mintlify.site-0EA5E9)](https://adhd.mintlify.site/)
 [![license](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENSE)
 [![Node](https://img.shields.io/badge/node-%3E%3D18-brightgreen)](./documentation/install.md)
 [![Paper](https://img.shields.io/badge/paper-preprint-blueviolet)](https://adhdstack.github.io/)
@@ -27,7 +28,7 @@ Linear Chain-of-Thought anchors on whatever it says first. Tree-of-Thought widen
 
 Reach for it on **design decisions, fuzzy debugging, naming, API surface design, strategy, and any prompt of the shape *"give me a few ways to…"***.
 
-📄 **Preprint:** [ADHD: Parallel Divergent Ideation for Coding Agents](https://adhdstack.github.io/) · 👤 **Author:** Udit Akhouri — [@akhouriudit](https://x.com/akhouriudit) · [LinkedIn](https://www.linkedin.com/in/udit-akhouri-10160a168/)
+📚 **Official docs:** [adhd.mintlify.site](https://adhd.mintlify.site/) · 📄 **Preprint:** [ADHD: Parallel Divergent Ideation for Coding Agents](https://adhdstack.github.io/) · 👤 **Author:** Udit Akhouri — [@akhouriudit](https://x.com/akhouriudit) · [LinkedIn](https://www.linkedin.com/in/udit-akhouri-10160a168/)
 
 ---
 
@@ -198,6 +199,10 @@ Mean scores across 6 open-ended engineering problems (0–10), ADHD vs a single-
 ---
 
 ## Documentation
+
+📚 **Official docs:** [**adhd.mintlify.site**](https://adhd.mintlify.site/) — the full, browsable documentation site.
+
+In-repo pages:
 
 | Page | What's in it |
 |---|---|
