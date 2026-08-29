@@ -1,4 +1,4 @@
-<img width="1917" height="972" alt="image" src="https://github.com/user-attachments/assets/4d00ac84-e8e4-445f-81c7-44949c8dc44b" /><p align="center">
+
   <a href="https://adhdstack.github.io/">
     <img src="docs/hero.png" alt="ADHD for Claude Code" width="100%">
   </a>
