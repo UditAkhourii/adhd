@@ -1,4 +1,4 @@
-<p align="center">
+<img width="1917" height="972" alt="image" src="https://github.com/user-attachments/assets/4d00ac84-e8e4-445f-81c7-44949c8dc44b" /><p align="center">
   <a href="https://adhdstack.github.io/">
     <img src="docs/hero.png" alt="ADHD for Claude Code" width="100%">
   </a>
@@ -13,11 +13,11 @@
 [![Node](https://img.shields.io/badge/node-%3E%3D18-brightgreen)](./documentation/install.md)
 [![Paper](https://img.shields.io/badge/paper-preprint-blueviolet)](https://adhdstack.github.io/)
 [![Featured: The New Stack](https://img.shields.io/badge/featured-The%20New%20Stack-ff5500)](https://thenewstack.io/claude-code-adhd/)
-[![Discord](https://img.shields.io/badge/Discord-Join%20the%20chat-5865F2?logo=discord&logoColor=white)](https://discord.gg/NbWwkwwGw)
+[![Discord](https://img.shields.io/badge/Discord-Join%20the%20chat-5865F2?logo=discord&logoColor=white)](https://discord.gg/PZcRzjXQah)
 
 <a href="https://trendshift.io/repositories/39300?utm_source=trendshift-badge&amp;utm_medium=badge&amp;utm_campaign=badge-trendshift-39300" target="_blank" rel="noopener noreferrer"><img src="https://trendshift.io/api/badge/trendshift/repositories/39300/daily?language=TypeScript" alt="UditAkhourii%2Fadhd | Trendshift" width="250" height="55"/></a>
 
-> 🎮 [**Join the Discord →**](https://discord.gg/NbWwkwwGw) for frame design, eval problems, and trap-hunting in real time · 👉 [**Join the community →**](https://tally.so/r/WO1Nzj) as a contributor, maintainer, or early adopter (one short form).
+> 🎮 [**Join the Discord →**](https://discord.gg/PZcRzjXQah) for frame design, eval problems, and trap-hunting in real time · 👉 [**Join the community →**](https://tally.so/r/WO1Nzj) as a contributor, maintainer, or early adopter (one short form).
 
 > **An architectural fix for premature convergence in autoregressive reasoning.**
 
