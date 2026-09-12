@@ -348,9 +348,12 @@ export async function run(opts: RunOptions): Promise<RunResult> {
 
   const frames = selectFrames(framesPerRun, codeMode);
   const limit = pLimit(concurrency);
+  const failedFrames: { frameId: string; error: string }[] = [];
 
   // PHASE 1 — DIVERGE. Pure parallel fan-out. No branch sees another.
-  const branches = await Promise.all(
+  // allSettled, not all: one branch's callLLM throwing (rate limit, timeout,
+  // unrecoverable response) shouldn't discard every other branch's work.
+  const branchSettled = await Promise.allSettled(
     frames.map((f) =>
       limit(async () => {
         onEvent?.({ kind: "frame:start", frameId: f.id, frameLabel: f.label });
@@ -360,6 +363,24 @@ export async function run(opts: RunOptions): Promise<RunResult> {
       }),
     ),
   );
+
+  const branches: Branch[] = [];
+  branchSettled.forEach((result, i) => {
+    const f = frames[i];
+    if (result.status === "fulfilled") {
+      branches.push(result.value);
+    } else {
+      const error = result.reason instanceof Error ? result.reason.message : String(result.reason);
+      failedFrames.push({ frameId: f.id, error });
+      onEvent?.({ kind: "frame:failed", frameId: f.id, frameLabel: f.label, error });
+    }
+  });
+
+  if (branches.length === 0) {
+    throw new Error(
+      `all ${frames.length} divergence branches failed: ${failedFrames.map((f) => `${f.frameId}: ${f.error}`).join("; ")}`,
+    );
+  }
 
   const allIdeas: Idea[] = branches.flatMap((b) => b.ideas);
 
@@ -396,7 +417,7 @@ export async function run(opts: RunOptions): Promise<RunResult> {
 
   // PHASE 3 — FOCUS / DEEPEN top-K. This is the "connecting the dots" pass.
   const toDeepen = ranked.slice(0, topK);
-  const deepened = await Promise.all(
+  const deepenSettled = await Promise.allSettled(
     toDeepen.map((idea) =>
       limit(async () => {
         onEvent?.({ kind: "deepen:start", ideaId: idea.id, text: idea.text });
@@ -406,6 +427,19 @@ export async function run(opts: RunOptions): Promise<RunResult> {
       }),
     ),
   );
+
+  const deepened: DeepenedIdea[] = [];
+  deepenSettled.forEach((result, i) => {
+    const idea = toDeepen[i];
+    if (result.status === "fulfilled") {
+      deepened.push(result.value);
+    } else {
+      const error = result.reason instanceof Error ? result.reason.message : String(result.reason);
+      const frameLabel = frames.find((f) => f.id === idea.frameId)?.label ?? idea.frameId;
+      failedFrames.push({ frameId: idea.frameId, error });
+      onEvent?.({ kind: "frame:failed", frameId: idea.frameId, frameLabel, error });
+    }
+  });
 
   // One provocation = a wild-tagged frame's lowest-scoring-but-highest-novelty leaf,
   // reframed as a question. Cheap, doesn't need another LLM call.
@@ -426,5 +460,6 @@ export async function run(opts: RunOptions): Promise<RunResult> {
     traps,
     deepened,
     provocation,
+    failedFrames,
   };
 }
