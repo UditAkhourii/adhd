@@ -139,9 +139,8 @@ export function selectFrames(n: number, codeMode = true): Frame[] {
     : [...FRAMES];
   const wild = FRAMES.filter((f) => f.tags.includes("wild"));
 
-  const shuffled = shuffle(pool);
-  const picked = shuffled.slice(0, Math.max(1, n - 1));
   const wildPick = wild[Math.floor(Math.random() * wild.length)];
-  if (!picked.find((f) => f.id === wildPick.id)) picked.push(wildPick);
-  return picked.slice(0, n);
+  const remaining = pool.filter((f) => f.id !== wildPick.id);
+  const picked = shuffle(remaining).slice(0, Math.max(0, n - 1));
+  return [wildPick, ...picked].slice(0, n);
 }
