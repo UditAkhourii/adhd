@@ -321,12 +321,16 @@ export async function run(opts: RunOptions): Promise<RunResult> {
     stripAnchors = true,
     model,
     criticModel,
+    packs,
     onEvent,
   } = opts;
 
   // The critic (score + cluster) can run on a different model from the
   // generator to decorrelate errors. Defaults to the generator model.
   const critic = criticModel ?? model;
+
+  // Selected before the reframe so an unknown pack fails before any LLM call.
+  const frames = selectFrames(framesPerRun, codeMode, packs);
 
   // PHASE 0 — REFRAME. Strip incidental anchors (current stack, existing
   // tool names) from the problem statement before it ever reaches a branch.
@@ -346,7 +350,6 @@ export async function run(opts: RunOptions): Promise<RunResult> {
     onEvent?.({ kind: "reframe:done", changed: Boolean(reframe) });
   }
 
-  const frames = selectFrames(framesPerRun, codeMode);
   const limit = pLimit(concurrency);
 
   // PHASE 1 — DIVERGE. Pure parallel fan-out. No branch sees another.

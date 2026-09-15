@@ -26,6 +26,7 @@ adhd "..." --json > result.json
 | `--context PATH` | — | inject a file as context (code, stack, constraints) |
 | `--model NAME` | SDK default | override model (generator + critic) |
 | `--critic-model NAME` | = `--model` | override model for the critic passes only (score + cluster) — use a different family to decorrelate critic errors |
+| `--pack NAME` | `core` | draw frames from this pack; repeat to pool several packs |
 | `--no-code-mode` | — | don't bias frames toward engineering |
 | `--no-anchor-strip` | — | don't strip incidental anchors (stack, tool names) from the problem before fan-out |
 | `--json` | — | emit machine-readable `RunResult` |
@@ -34,7 +35,7 @@ adhd "..." --json > result.json
 ## Library (TypeScript)
 
 ```ts
-import { run, renderText, FRAMES, selectFrames } from "adhd-agent";
+import { run, renderText, FRAMES, PACKS, selectFrames } from "adhd-agent";
 import type {
   RunOptions, RunResult, Idea, Branch, Cluster,
   DeepenedIdea, Score, RunEvent,
@@ -51,6 +52,7 @@ type RunOptions = {
   stripAnchors?: boolean;  // strip incidental anchors before fan-out, default true
   model?: string;          // generator + critic
   criticModel?: string;    // critic (score + cluster) only; defaults to `model`
+  packs?: string[];        // default ["core"]
   onEvent?: (e: RunEvent) => void;
 };
 ```
@@ -74,6 +76,13 @@ console.log(renderText(result));
 //   result.traps            → "looks good but isn't" list, with reasons
 //   result.deepened         → top-K expanded: sketch + risk + first step + child ideas
 //   result.clusters         → the SHAPE of the idea space
+```
+
+Frames come from named packs. `PACKS` maps each pack name to its frames (`FRAMES` is the `core` pack), and `selectFrames(n, codeMode, packs)` pools the named packs before picking. An unknown name or an empty list throws.
+
+```ts
+console.log(Object.keys(PACKS)); // ["core"]
+const frames = selectFrames(4, true, ["core"]);
 ```
 
 Everything in `RunResult` is structured — clusters, scored ideas with `novelty / viability / fit`, trap reasons, deepened sketches with child ideas. You can route it into your own renderer, downstream agent, or planning loop.

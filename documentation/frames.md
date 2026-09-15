@@ -25,13 +25,14 @@ A frame is a *vantage operator*: a system-prompt payload that re-poses the entir
 
 ## How frames are selected
 
+- Frames live in packs. The built-in frames are the `core` pack, [`src/packs/core.ts`](../src/packs/core.ts), and a run draws from `core` unless `--pack NAME` (repeatable) or `packs` in `RunOptions` names others.
 - `codeMode` (default `true`) biases selection toward `code` and `design` tags.
 - A `wild` frame always gets one reserved slot per run so divergence stays weird.
 - Selection is deterministic per-seed so runs are reproducible.
 
 ## Authoring your own
 
-A frame is ~5 lines in [`src/frames.ts`](../src/frames.ts). A good frame passes at least two of:
+A frame is ~5 lines in a pack under [`src/packs/`](../src/packs/): add it to [`src/packs/core.ts`](../src/packs/core.ts), or to a pack of its own for another domain. A good frame passes at least two of:
 
 - **Distinct vocabulary** — concepts no existing frame uses (pheromone trails, futures contracts, frame-perfect skip).
 - **Distinct posture** — adversarial vs constructive vs naive vs maximalist. Not just a different domain saying the same thing.

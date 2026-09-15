@@ -1,6 +1,6 @@
 export { run } from "./engine.js";
 export { renderText } from "./render.js";
-export { FRAMES, selectFrames } from "./frames.js";
+export { FRAMES, PACKS, selectFrames } from "./frames.js";
 export type {
   Idea,
   Branch,

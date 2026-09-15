@@ -62,6 +62,7 @@ export type RunOptions = {
   criticModel?: string;                // override model for the critic passes
                                        // (score + cluster) only; falls back to `model`.
                                        // Use a different family to decorrelate critic errors.
+  packs?: string[];                    // frame packs to draw from, by name, default ["core"]
   onEvent?: (e: RunEvent) => void;     // stream progress to caller/CLI
 };
 

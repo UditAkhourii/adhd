@@ -36,7 +36,7 @@ A frame is the cheapest, highest-leverage contribution. Every new frame widens w
 
 ### The shape
 
-In [`src/frames.ts`](./src/frames.ts), append to the `FRAMES` array:
+In [`src/packs/core.ts`](./src/packs/core.ts), append to the `core` array (or to your own pack, below):
 
 ```ts
 {
@@ -59,6 +59,30 @@ Fields:
 | `prompt` | the vantage prompt. Written as instruction to the generator: *"You are X. Re-ask this as Y."* |
 | `tags` | any of `"code"`, `"design"`, `"general"`, `"wild"`. Tags affect frame selection — `code-mode` (default) biases toward `code`/`design`; `wild` always has one slot reserved per run. |
 
+### Adding a pack
+
+Frames for another domain go in a pack of their own rather than in `core`:
+
+1. Create a module under [`src/packs/`](./src/packs/), e.g. `src/packs/security.ts`, exporting a `Frame[]`:
+
+   ```ts
+   import type { Frame } from "../frames.js";
+
+   export const security: Frame[] = [
+     // frames, in the shape above
+   ];
+   ```
+
+2. Register it by name in the `PACKS` object in [`src/frames.ts`](./src/frames.ts):
+
+   ```ts
+   import { security } from "./packs/security.js";
+
+   export const PACKS: Record<string, Frame[]> = { core, security };
+   ```
+
+3. Select it with `--pack security` on the CLI (repeat `--pack` to pool several packs) or `packs: ["security"]` in `RunOptions`. Without either, only `core` is used. A pack with no `wild` frame still gets one from `core`, and a pack with no `code` or `design` frame is used whole under code-mode.
+
 ### Quality bar
 
 A new frame should pass at least two of these:
@@ -72,9 +96,9 @@ A new frame should pass at least two of these:
 Run your frame in isolation and check that the ideas are *structurally different* from what the other frames produce on the same problem:
 
 ```bash
-# tweak src/cli.ts or write a quick scratch script that forces selectFrames
-# to return just your new frame, then run:
-npm run dev -- "design a write-ahead log under bursty load"
+# put the new frame alone in a one-frame pack (see "Adding a pack"), e.g.
+# src/packs/scratch.ts registered as `scratch` in PACKS, then run:
+npm run dev -- "design a write-ahead log under bursty load" --pack scratch
 ```
 
 If the ideas are paraphrases of what the "hardware" or "logistics" frame already produces, the frame isn't earning its slot. Iterate the prompt.

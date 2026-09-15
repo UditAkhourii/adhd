@@ -24,6 +24,7 @@ type Flags = {
   quiet: boolean;
   model?: string;
   criticModel?: string;
+  packs?: string[];
 };
 
 function positiveInt(raw: string, flag: string, max: number): number {
@@ -63,6 +64,15 @@ function parse(argv: string[]): Flags {
       }
       case "--model": f.model = argv[++i]; break;
       case "--critic-model": f.criticModel = argv[++i]; break;
+      case "--pack": {
+        const name = argv[++i];
+        if (!name) {
+          console.error("Error: --pack needs a pack name");
+          process.exit(1);
+        }
+        (f.packs ??= []).push(name);
+        break;
+      }
       case "--no-code-mode": f.codeMode = false; break;
       case "--no-anchor-strip": f.stripAnchors = false; break;
       case "--json": f.json = true; break;
@@ -99,6 +109,8 @@ FLAGS
   --model NAME      override the SDK model (generator + critic)
   --critic-model N  override the model for the critic passes only
                     (score + cluster); decorrelates critic errors
+  --pack NAME       draw frames from this pack (default core); repeat to
+                    pool several packs
   --no-code-mode    don't bias frames toward engineering
   --no-anchor-strip don't strip incidental anchors (stack, tool names) from
                     the problem before fan-out; keep the raw problem as-is
@@ -140,6 +152,7 @@ async function main() {
     stripAnchors: flags.stripAnchors,
     model: flags.model,
     criticModel: flags.criticModel,
+    packs: flags.packs,
     onEvent,
   };
 
