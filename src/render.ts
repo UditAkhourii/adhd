@@ -85,5 +85,13 @@ export function renderText(r: RunResult): string {
   out.push(bold("Provocation"));
   out.push("  " + yellow(r.provocation));
 
+  if (r.failedFrames.length > 0) {
+    out.push("");
+    out.push(bold("Partial failures"));
+    for (const f of r.failedFrames) {
+      out.push(`  ${red("✗")} ${f.frameId}: ${dim(f.error)}`);
+    }
+  }
+
   return out.join("\n");
 }

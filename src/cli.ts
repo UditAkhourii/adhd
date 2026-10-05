@@ -137,6 +137,7 @@ async function main() {
       case "score:done":  process.stderr.write(`  scored ${e.total} ideas\n`); break;
       case "cluster:done":process.stderr.write(`  ${e.clusters} clusters\n`); break;
       case "deepen:start":process.stderr.write(`  ◎ focus → ${e.text}\n`); break;
+      case "frame:failed":process.stderr.write(`  ✗ ${e.frameLabel} failed: ${e.error}\n`); break;
       case "warn":        process.stderr.write(`  ! ${e.message}\n`); break;
     }
   };

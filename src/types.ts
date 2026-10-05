@@ -33,6 +33,7 @@ export type RunResult = {
   traps: Idea[];
   deepened: DeepenedIdea[];   // top branches expanded
   provocation: string;        // single wild-card question/idea
+  failedFrames: { frameId: string; error: string }[]; // branches/deepens that threw
 };
 
 export type Cluster = {
@@ -74,4 +75,5 @@ export type RunEvent =
   | { kind: "cluster:done"; clusters: number }
   | { kind: "deepen:start"; ideaId: string; text: string }
   | { kind: "deepen:done"; ideaId: string }
+  | { kind: "frame:failed"; frameId: string; frameLabel: string; error: string }
   | { kind: "warn"; message: string };
