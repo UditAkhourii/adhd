@@ -29,11 +29,21 @@ jobs:
         uses: actions/github-script@v7
         with:
           script: |
+            // The model's output derives from untrusted issue text. Post it as a
+            // fenced code block so any markdown, links, or HTML it emits render
+            // inert instead of becoming live content in the thread.
+            const output = (process.env.RESPONSE || '').trim();
+            if (!output) {
+              console.log('No summary returned; skipping comment.');
+              return;
+            }
+            const longestRun = Math.max(0, ...(output.match(/`+/g) || []).map((run) => run.length));
+            const fence = '`'.repeat(Math.max(3, longestRun + 1));
             await github.rest.issues.createComment({
               owner: context.repo.owner,
               repo: context.repo.repo,
               issue_number: context.payload.issue.number,
-              body: process.env.RESPONSE,
+              body: `${fence}text\n${output}\n${fence}`,
             });
         env:
           RESPONSE: ${{ steps.inference.outputs.response }}
