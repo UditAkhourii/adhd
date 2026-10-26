@@ -67,6 +67,10 @@ export function parseJSON<T>(raw: string, schema?: ZodType<T>): T {
       ? firstObj
       : Math.min(firstObj, firstArr);
   if (start > 0) s = s.slice(start);
+  const lastObj = s.lastIndexOf("}");
+  const lastArr = s.lastIndexOf("]");
+  const end = Math.max(lastObj, lastArr);
+  if (end !== -1) s = s.slice(0, end + 1);
   const parsed = JSON.parse(s);
   if (schema) return schema.parse(parsed);
   return parsed as T;

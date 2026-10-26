@@ -27,7 +27,7 @@ import type {
 } from "./types.js";
 
 const DivergeRowSchema = z.array(
-  z.object({ text: z.string(), rationale: z.string().optional() }),
+  z.object({ text: z.string(), rationale: z.string().nullable().optional() }),
 );
 
 const ScoreRowSchema = z.array(
@@ -36,8 +36,8 @@ const ScoreRowSchema = z.array(
     novelty: z.number().min(0).max(10),
     viability: z.number().min(0).max(10),
     fit: z.number().min(0).max(10),
-    trap: z.string().optional(),
-    strength: z.string().optional(),
+    trap: z.string().nullable().optional(),
+    strength: z.string().nullable().optional(),
   }),
 );
 
@@ -48,14 +48,14 @@ const ClusterSchema = z.array(
 const DeepenSchema = z.object({
   sketch: z.string(),
   childIdeas: z.array(
-    z.object({ text: z.string(), rationale: z.string().optional() }),
+    z.object({ text: z.string(), rationale: z.string().nullable().optional() }),
   ),
 });
 
 const ReframeSchema = z.object({
   reframed: z.string(),
   changed: z.boolean(),
-  note: z.string().optional(),
+  note: z.string().nullable().optional(),
 });
 
 const DIVERGE_SYSTEM = `You are in DIVERGENT mode. You are a generator, not a critic.
@@ -176,7 +176,7 @@ Output JSON array: [{"text": "...", "rationale": "..."}]
     id: randomUUID(),
     frameId: frame.id,
     text: r.text,
-    rationale: r.rationale,
+    rationale: r.rationale ?? undefined,
     depth: 0,
   }));
   return { frameId: frame.id, ideas };
@@ -221,8 +221,8 @@ Score each. Output JSON array:
       viability: r.viability,
       fit: r.fit,
       total,
-      trap: r.trap,
-      strength: r.strength,
+      trap: r.trap ?? undefined,
+      strength: r.strength ?? undefined,
     });
   }
   return out;
@@ -301,7 +301,7 @@ Output JSON:
     id: randomUUID(),
     frameId: idea.frameId,
     text: c.text,
-    rationale: c.rationale,
+    rationale: c.rationale ?? undefined,
     depth: idea.depth + 1,
     parentId: idea.id,
   }));

@@ -54,16 +54,41 @@ function parse(argv: string[]): Flags {
       case "--concurrency": f.concurrency = positiveInt(argv[++i], "--concurrency", 16); break;
       case "--context": {
         const path = argv[++i];
-        const { size } = statSync(path);
-        if (size > MAX_CONTEXT_BYTES) {
-          console.error(`Error: context file is ${(size / 1024 / 1024).toFixed(1)} MB (max 10 MB)`);
+        if (!path) {
+          console.error("Error: --context needs a file path");
           process.exit(1);
         }
-        f.context = readFileSync(path, "utf8");
+        try {
+          const { size } = statSync(path);
+          if (size > MAX_CONTEXT_BYTES) {
+            console.error(`Error: context file is ${(size / 1024 / 1024).toFixed(1)} MB (max 10 MB)`);
+            process.exit(1);
+          }
+          f.context = readFileSync(path, "utf8");
+        } catch {
+          console.error(`Error: context file not found: "${path}"`);
+          process.exit(1);
+        }
         break;
       }
-      case "--model": f.model = argv[++i]; break;
-      case "--critic-model": f.criticModel = argv[++i]; break;
+      case "--model": {
+        const m = argv[++i];
+        if (!m) {
+          console.error("Error: --model needs a model name");
+          process.exit(1);
+        }
+        f.model = m;
+        break;
+      }
+      case "--critic-model": {
+        const m = argv[++i];
+        if (!m) {
+          console.error("Error: --critic-model needs a model name");
+          process.exit(1);
+        }
+        f.criticModel = m;
+        break;
+      }
       case "--pack": {
         const name = argv[++i];
         if (!name) {

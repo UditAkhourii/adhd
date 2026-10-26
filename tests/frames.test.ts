@@ -101,6 +101,21 @@ test("selectFrames throws when no pack is named", () => {
   assert.throws(() => selectFrames(5, true, []), /at least one pack/);
 });
 
+test("selectFrames(1, ...) always includes a wildcard frame", () => {
+  for (let i = 0; i < 50; i++) {
+    const [frame] = selectFrames(1, true);
+    assert.ok(frame.tags.includes("wild"), `expected wildcard frame, got ${frame.id}`);
+  }
+});
+
+test("selectFrames(n, ...) always includes at least one wildcard frame for n > 1", () => {
+  for (let i = 0; i < 50; i++) {
+    const picked = selectFrames(4, true);
+    assert.ok(picked.some((f) => f.tags.includes("wild")));
+    assert.equal(picked.length, 4);
+  }
+});
+
 // Kept last: it checks that every test above removed the packs it added.
 test("PACKS holds only core once the other tests finish", () => {
   assert.deepEqual(Object.keys(PACKS), ["core"]);

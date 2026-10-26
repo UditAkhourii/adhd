@@ -29,3 +29,31 @@ test("--pack with no name exits 1 before any LLM call", () => {
   assert.equal(result.status, 1, `stderr: ${result.stderr}`);
   assert.match(result.stderr, /--pack needs a pack name/);
 });
+
+test("--context with non-existent file exits 1 with clean error", () => {
+  const result = spawnSync(
+    process.execPath,
+    ["--import", "tsx", "src/cli.ts", "x", "--context", "missing-file-xyz.txt"],
+    {
+      cwd: root,
+      env: { PATH: process.env.PATH },
+      encoding: "utf8",
+      timeout: 5000,
+    },
+  );
+
+  assert.equal(result.status, 1, `stderr: ${result.stderr}`);
+  assert.match(result.stderr, /context file not found/);
+});
+
+test("--model with no name exits 1", () => {
+  const result = spawnSync(process.execPath, ["--import", "tsx", "src/cli.ts", "x", "--model"], {
+    cwd: root,
+    env: { PATH: process.env.PATH },
+    encoding: "utf8",
+    timeout: 5000,
+  });
+
+  assert.equal(result.status, 1, `stderr: ${result.stderr}`);
+  assert.match(result.stderr, /--model needs a model name/);
+});
