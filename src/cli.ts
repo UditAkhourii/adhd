@@ -42,6 +42,32 @@ function positiveInt(raw: string, flag: string, max: number): number {
 
 const MAX_CONTEXT_BYTES = 10 * 1024 * 1024; // 10 MB
 
+// Unguarded, statSync/readFileSync on a missing file or a directory reach
+// main().catch and print a raw stack trace; fail in one line like other flags.
+function readContext(path: string): string {
+  let stats;
+  try {
+    stats = statSync(path);
+  } catch (e) {
+    console.error(`Error: cannot read --context file "${path}": ${(e as Error).message}`);
+    process.exit(1);
+  }
+  if (!stats.isFile()) {
+    console.error(`Error: --context must be a file, got "${path}"`);
+    process.exit(1);
+  }
+  if (stats.size > MAX_CONTEXT_BYTES) {
+    console.error(`Error: context file is ${(stats.size / 1024 / 1024).toFixed(1)} MB (max 10 MB)`);
+    process.exit(1);
+  }
+  try {
+    return readFileSync(path, "utf8");
+  } catch (e) {
+    console.error(`Error: cannot read --context file "${path}": ${(e as Error).message}`);
+    process.exit(1);
+  }
+}
+
 function parse(argv: string[]): Flags {
   const f: Flags = { problem: "", codeMode: true, stripAnchors: true, json: false, quiet: false };
   const rest: string[] = [];
@@ -54,12 +80,11 @@ function parse(argv: string[]): Flags {
       case "--concurrency": f.concurrency = positiveInt(argv[++i], "--concurrency", 16); break;
       case "--context": {
         const path = argv[++i];
-        const { size } = statSync(path);
-        if (size > MAX_CONTEXT_BYTES) {
-          console.error(`Error: context file is ${(size / 1024 / 1024).toFixed(1)} MB (max 10 MB)`);
+        if (!path) {
+          console.error("Error: --context needs a file path");
           process.exit(1);
         }
-        f.context = readFileSync(path, "utf8");
+        f.context = readContext(path);
         break;
       }
       case "--model": f.model = argv[++i]; break;
