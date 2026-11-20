@@ -71,6 +71,15 @@ async function main() {
   const quick = hasFlag("--quick");
   let problems = onlyId ? allProblems.filter((p) => p.id === onlyId) : allProblems;
   if (quick) problems = problems.slice(0, 2);
+  // Zero problems would still reach writeReport, which divides by rows.length
+  // and overwrites the committed EVALS.md with a table of NaN.
+  if (problems.length === 0) {
+    console.error(
+      `Error: no problems matched${onlyId ? ` --problem "${onlyId}"` : ""}. ` +
+        `Known ids: ${allProblems.map((p) => p.id).join(", ")}`,
+    );
+    process.exit(1);
+  }
 
   console.error(`▸ running ${problems.length} eval(s)`);
 
