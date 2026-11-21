@@ -10,17 +10,36 @@
 // outputs blinded (labelled A/B in random order per problem) so positional bias
 // is balanced across runs.
 
+import { z } from "zod";
+
 import { callLLM, parseJSON } from "../src/llm.js";
 
-export type Verdict = {
-  breadth: { a: number; b: number; reason: string };       // 0-10, range of distinct angles
-  novelty: { a: number; b: number; reason: string };       // 0-10, non-obvious-but-viable
-  trap_detection: { a: number; b: number; reason: string };// 0-10, names traps with reasons
-  actionability: { a: number; b: number; reason: string }; // 0-10, gives concrete first steps
-  builder_usefulness: { a: number; b: number; reason: string }; // 0-10, would a builder ship from this?
-  overall_winner: "A" | "B" | "tie";
-  one_line_summary: string;
-};
+const Dimension = z.object({
+  a: z.number().min(0).max(10),
+  b: z.number().min(0).max(10),
+  reason: z.string(),
+});
+
+// run-evals.ts treats any winner other than exactly "A" or "B" as a tie, so an
+// unvalidated "Output A" would silently turn a win into a tie. Case is the one
+// unambiguous variation, so normalise it; anything else must fail loudly.
+const Winner = z.preprocess((v) => {
+  if (typeof v !== "string") return v;
+  const t = v.trim().toLowerCase();
+  return t === "a" ? "A" : t === "b" ? "B" : t;
+}, z.enum(["A", "B", "tie"]));
+
+const VerdictSchema = z.object({
+  breadth: Dimension,            // 0-10, range of distinct angles
+  novelty: Dimension,            // 0-10, non-obvious-but-viable
+  trap_detection: Dimension,     // 0-10, names traps with reasons
+  actionability: Dimension,      // 0-10, gives concrete first steps
+  builder_usefulness: Dimension, // 0-10, would a builder ship from this?
+  overall_winner: Winner,
+  one_line_summary: z.string(),
+});
+
+export type Verdict = z.infer<typeof VerdictSchema>;
 
 const JUDGE_SYSTEM = `You are a skeptical staff engineer reviewing two ideation outputs (A and B)
 for the same problem. Your job is to score them on the dimensions of open-ended
@@ -69,5 +88,11 @@ Score both on the rubric. Output JSON of shape:
 }`;
 
   const raw = await callLLM({ model, systemPrompt: JUDGE_SYSTEM, userPrompt });
-  return parseJSON<Verdict>(raw);
+  return parseVerdict(raw);
+}
+
+// Every engine call site validates model output with a schema; the judge has to
+// as well, or a malformed verdict lands in EVALS.md as NaN or a phantom tie.
+export function parseVerdict(raw: string): Verdict {
+  return VerdictSchema.parse(parseJSON<unknown>(raw));
 }
